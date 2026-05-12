@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useAuth } from "@/context/authContext"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useData } from "@/context/dataContext"
 
 interface Categoria {
     id: number
@@ -13,7 +14,7 @@ interface Categoria {
 
 function AcoesCategoriaCell({ categoria }: { categoria: Categoria }) {
     const { usuario } = useAuth()
-    const router = useRouter()
+    const {recarregar} = useData() 
 
     async function deletar() {
         try {
@@ -22,12 +23,15 @@ function AcoesCategoriaCell({ categoria }: { categoria: Categoria }) {
                 headers: { 'Authorization': `Bearer ${usuario?.token}` }
             })
             
+            const data = await result.json()
+
             if (result.ok) {
-                toast.dismiss()
                 toast.success("Categoria deletado com sucesso.")
-                router.refresh()
+                recarregar()
             } else {
-                toast.error("Erro ao excluir")
+                toast.error("Erro ao excluir", {
+                    description: data.mensagem
+                })
             }
         } catch (erro) {
             toast.error("Erro ao excluir.", {

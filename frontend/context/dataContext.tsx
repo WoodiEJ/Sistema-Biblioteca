@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { useAuth } from "./authContext"
+import { useRouter } from "next/navigation"
 
 interface Livro {
     id: number
@@ -42,6 +43,7 @@ interface DataContextType {
     usuarios: Usuario[]
     categorias: Categorias[]
     carregado: boolean
+    recarregar: () => void
 }
 
 
@@ -54,40 +56,62 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const { usuario } = useAuth()
     const [categorias, setCategorias] = useState<Categorias[]>([])
     const [carregado, setCarregado] = useState(false)
+    const { logout } = useAuth()
+    const router = useRouter()
 
-    useEffect(() => {
-        console.log('usuario no context:', usuario)
+    async function buscarDados() {
         if (!usuario?.token) return
+        const headers = { 'Authorization': `Bearer ${usuario?.token}` }
 
-        async function buscarDados() {
-            const headers = { 'Authorization': `Bearer ${usuario?.token}` }
+        const [livrosRes, categoriasRes] = await Promise.all([
+            fetch('http://localhost:3000/livro', { headers }),
+            fetch('http://localhost:3000/categorias', { headers })
+        ])
 
-            const [livrosRes, emprestimoRes, usuariosRes, categoriasRes] = await Promise.all([
-                fetch('http://localhost:3000/livro', { headers }),
-                fetch('http://localhost:3000/gerenciar', { headers }),
-                fetch('http://localhost:3000/usuarios', { headers }),
-                fetch('http://localhost:3000/categorias', {headers})
-            ])
-
-            const [livrosData, emprestimosData, usuariosData, categoriasData] = await Promise.all([
-                livrosRes.json(),
-                emprestimoRes.json(),
-                usuariosRes.json(),
-                categoriasRes.json()
-            ])
-
-            setLivros(Array.isArray(livrosData) ? livrosData : [])
-            setEmprestimos(Array.isArray(emprestimosData) ? emprestimosData : [])
-            setUsuarios(Array.isArray(usuariosData) ? usuariosData : [])
-            setCategorias(Array.isArray(categoriasData) ? categoriasData : [])
-            setCarregado(true)
+        if ([livrosRes, categoriasRes].some(r => r.status === 401)) {
+            logout()
+            router.push('/')
+            return
         }
 
+        const [livrosData, categoriasData] = await Promise.all([
+            livrosRes.json(),
+            categoriasRes.json()
+        ])
+
+        setLivros(Array.isArray(livrosData) ? livrosData : [])
+        setCategorias(Array.isArray(categoriasData) ? categoriasData : [])
+
+        if (usuario.role === 'ADMIN') {
+            const [emprestimoRes, usuariosRes] = await Promise.all([
+                fetch('http://localhost:3000/gerenciar', { headers }),
+                fetch('http://localhost:3000/usuarios', { headers })
+            ])
+
+            if ([emprestimoRes, usuariosRes].some(r => r.status === 401)) {
+                logout()
+                router.push('/')
+                return
+            }
+
+            const [emprestimosData, usuariosData] = await Promise.all([
+                emprestimoRes.json(),
+                usuariosRes.json()
+            ])
+
+            setEmprestimos(Array.isArray(emprestimosData) ? emprestimosData : [])
+            setUsuarios(Array.isArray(usuariosData) ? usuariosData : [])
+        }
+
+        setCarregado(true)
+    }
+
+    useEffect(() => {
         buscarDados()
     }, [usuario])
 
     return (
-        <DataContext.Provider value={{ livros, emprestimos, usuarios, categorias, carregado }}>
+        <DataContext.Provider value={{ livros, emprestimos, usuarios, categorias, carregado, recarregar: buscarDados }}>
             {children}
         </DataContext.Provider>
     )

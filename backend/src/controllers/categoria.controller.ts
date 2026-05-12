@@ -100,14 +100,20 @@ export async function atualizarCategoria(req: Request, res: Response) {
 export async function deletarCategoria(req: Request, res: Response) {
     try {
         const id = Number(req.params.id)
-        const categoria = await prisma.categoria.findUnique({where: {id}})
-
+        const categoria = await prisma.categoria.findUnique({ where: { id } })
+        
         if (!categoria) {
-            return res.status(400).json({mensagem: "Categoria nao existe"})
+            return res.status(400).json({ mensagem: "Categoria nao existe" })
         }
 
-        await prisma.livro.deleteMany({where: {categoria_id: id}})
-        await prisma.categoria.delete({where: {id}})
+        const livros = await prisma.livro.findMany({ where: { categoria_id: id } })
+        const livroId= livros.map(l => l.id)
+
+        await prisma.emprestimo.deleteMany({ where: { livro_id: { in: livroId } } })
+        await prisma.livro.deleteMany({ where: { categoria_id: id } })
+        await prisma.categoria.delete({ where: { id } })
+
+        return res.status(200).json({ mensagem: "Categoria deletada com sucesso" })
     } catch (erro) {
         if (erro instanceof Error) {
             return res.status(500).json({mensagem: erro.message})

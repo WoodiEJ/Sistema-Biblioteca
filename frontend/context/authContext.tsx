@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname, useRouter } from "next/navigation"
 import { createContext, useContext, useEffect, useState } from "react"
 
 interface Usuario {
@@ -18,6 +19,15 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [usuario, setUsuario] = useState<Usuario | null>(null)
+    const router = useRouter()
+    const path = usePathname()
+
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token && path !== '/') {
+            router.push('/')
+        }
+    }, [path])
 
     function login(token: string, role: string, id: number) {
         setUsuario({ token, role, id })

@@ -22,6 +22,7 @@ export default function EditarLivro() {
     const router = useRouter()
     const params = useParams()
     const id = Array.isArray(params.id) ? params.id[0] : params.id
+    const {recarregar} = useData() 
 
     console.log('id:', id)
 
@@ -67,6 +68,7 @@ export default function EditarLivro() {
             if (result.ok) {
                 toast.success("Livro atualizado com sucesso.")
                 router.push('/livro')
+                recarregar()
             } else {
                 toast.error("Erro ao atualizar.", {
                     description: data.mensagem

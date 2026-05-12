@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/authContext";
 import { useData } from "@/context/dataContext";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
+import { toast } from "sonner";
 
 function ReservarContent() {
     const [livro, setLivro] = useState('')
@@ -31,13 +32,42 @@ function ReservarContent() {
     }, [livroIdParam, livros])
 
     async function reservarLivro() {
-        await fetch('http://localhost:3000/reservar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${usuario?.token}`
+        try {
+            const result = await fetch('http://localhost:3000/reservar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${usuario?.token}`
+                },
+                body: JSON.stringify({ usuario_id: usuario?.id, livro_id: livroId })
+            })
+
+            const data = await result.json();
+
+            if (result.ok) {
+                toast.success("Livro reservado com sucesso!")
+            } else {
+                toast.error("Erro ao reservar.", {
+                    description: data.mensagem
+                })
+            }
+        } catch (erro) {
+            toast.error("Erro de conexão.", {
+                description: erro instanceof Error ? erro.message : "Erro desconhecido"
+            })
+        }
+    }
+
+    function confirmarReserva() {
+        toast("Confirme a reserva.", {
+            action:{ 
+                label: "Confirmar.",
+                onClick: () => reservarLivro()
             },
-            body: JSON.stringify({ usuario_id: usuario?.id, livro_id: livroId })
+            cancel: {
+                label: "Cancelar",
+                onClick: () => {}
+            }
         })
     }
 
@@ -71,7 +101,7 @@ function ReservarContent() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button className="w-full" onClick={reservarLivro}>Reservar</Button>
+                    <Button className="w-full" onClick={confirmarReserva}>Reservar</Button>
                 </CardFooter>
             </Card>
         </div>

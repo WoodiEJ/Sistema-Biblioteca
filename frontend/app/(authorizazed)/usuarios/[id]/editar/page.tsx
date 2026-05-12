@@ -21,6 +21,7 @@ export default function EditarUsuario() {
     const { usuarios } = useData()
     const router = useRouter()
     const { id } = useParams()
+    const {recarregar} = useData()
 
     useEffect(() => {
         const u = usuarios.find(u => u.id === Number(id))
@@ -47,6 +48,7 @@ export default function EditarUsuario() {
             if (result.ok) {
                 toast.success("Atualizado com sucesso.")
                 router.push('/usuarios')
+                recarregar()
             } else {
                 toast.error("Erro ao atualizar.", {
                     description: data.mensagem

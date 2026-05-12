@@ -8,6 +8,7 @@ import { useAuth } from "@/context/authContext"
 import { useRouter } from "next/navigation"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { toast } from "sonner"
+import { useData } from "@/context/dataContext"
 
 const roles = ["ADMIN", "USER"]
 
@@ -18,6 +19,7 @@ export default function CadastrarUsuario() {
     const [role, setRole] = useState<string | null>(null)
     const { usuario } = useAuth()
     const router = useRouter()
+    const {recarregar} = useData()
 
     async function cadastrar() {
         try {
@@ -35,6 +37,7 @@ export default function CadastrarUsuario() {
             if (result.ok) {
                 toast.success("Cadastro concluido com sucesso.")
                 router.push('/usuarios')
+                recarregar()
             } else {
                 toast.error("Erro ao cadastrar", {
                     description: data.mensagem

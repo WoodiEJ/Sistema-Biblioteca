@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/context/authContext"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useData } from "@/context/dataContext"
 
 export default function CadastrarCategoria() {
     const [nome, setNome] = useState('')
     const { usuario } = useAuth()
     const router = useRouter()
+    const { recarregar } = useData()
 
     async function cadastrar() {
         try {
@@ -26,12 +28,14 @@ export default function CadastrarCategoria() {
 
             if (response.ok) {
                 toast.success("Categoria cadastrada com sucesso!")
-                router.push('/categorias')
+                recarregar()
             } else {
                 toast.error("Erro ao cadastrar.")
             }
-        } catch (error) {
-            toast.error("Erro de conexão.")
+        } catch (erro) {
+            toast.error("Erro de conexão.", {
+                description: erro instanceof Error ? erro.message : "Erro desconhecido"
+            })
         }
     }
 
@@ -41,7 +45,7 @@ export default function CadastrarCategoria() {
         toast("Deseja mesmo cadastrar?", {
             action: {
                 label: "Confirmar",
-                onClick: () => cadastrar() 
+                onClick: () => cadastrar()
             },
             cancel: {
                 label: "Cancelar",

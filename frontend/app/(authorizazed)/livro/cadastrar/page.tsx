@@ -20,6 +20,7 @@ export default function CadastrarLivro() {
     const { usuario } = useAuth()
     const { categorias } = useData()
     const router = useRouter()
+    const {recarregar} = useData() 
 
     async function cadastrar() {
         try {
@@ -44,6 +45,7 @@ export default function CadastrarLivro() {
             if (result.ok) {
                 toast.success("Livro cadastrado com sucesso.")
                 router.push('/livro')
+                recarregar()
             } else {
                 toast.error("Erro ao cadastrar.", {
                     description: data.mensagem

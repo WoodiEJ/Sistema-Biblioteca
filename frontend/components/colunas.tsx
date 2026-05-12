@@ -5,6 +5,7 @@ import { BookCheck, Pencil, Trash } from "lucide-react"
 import { useAuth } from "@/context/authContext"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useData } from "@/context/dataContext"
 
 interface Livro {
     id: number
@@ -16,7 +17,7 @@ interface Livro {
 
 function AcoesCell({ livro }: { livro: Livro }) {
     const { usuario } = useAuth()
-    const router = useRouter()
+    const {recarregar} = useData() 
 
     async function deletar() {
         try {
@@ -29,7 +30,7 @@ function AcoesCell({ livro }: { livro: Livro }) {
 
             if (result.ok) {
                 toast.success("Livro Excluido com sucesso.")
-                router.refresh()
+                recarregar()
             } else {
                 toast.error("Erro ao excluir.", {
                     description: data.mensagem

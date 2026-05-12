@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useAuth } from "@/context/authContext"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useData } from "@/context/dataContext"
 
 interface Usuario {
     id: number
@@ -15,7 +16,7 @@ interface Usuario {
 
 function AcoesUsuarioCell({ usuario: u }: { usuario: Usuario }) {
     const { usuario } = useAuth()
-    const router = useRouter()
+    const {recarregar} = useData() 
 
     async function excluir() {
         try {
@@ -28,7 +29,7 @@ function AcoesUsuarioCell({ usuario: u }: { usuario: Usuario }) {
 
             if (result.ok) {
                 toast.success("Excluido com sucesso.")
-                router.refresh()
+                recarregar()
             } else {
                 toast.error("Erro ao excluir.", {
                     description: data.mensagem

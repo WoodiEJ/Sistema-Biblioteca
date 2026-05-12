@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/context/authContext"
 import { useRouter, useParams } from "next/navigation"
 import { toast } from "sonner"
+import { useData } from "@/context/dataContext"
 
 export default function EditarCategoria() {
     const [nome, setNome] = useState('')
@@ -14,6 +15,7 @@ export default function EditarCategoria() {
     const router = useRouter()
     const params = useParams()
     const id = Array.isArray(params.id) ? params.id[0] : params.id
+    const {recarregar} = useData()
 
     useEffect(() => {
         async function buscarCategoria() {
@@ -42,7 +44,7 @@ export default function EditarCategoria() {
             
             if (result.ok) {
                 toast.success("Categoria atualizado com sucesso.")
-                router.push('/categorias')
+                recarregar()
             } else {
                 toast.error("Erro ao atualizar.", {
                     description: `${dados.mensagem}`
@@ -50,7 +52,7 @@ export default function EditarCategoria() {
             }
         } catch (erro) {
             toast.error("Erro de conexão.", {
-                description: `${erro}`
+                description: erro instanceof Error ? erro.message : "Erro desconhecido"
             })
         }
     }

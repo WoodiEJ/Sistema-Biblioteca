@@ -7,34 +7,40 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/context/authContext"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import {jwtDecode} from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { toast } from "sonner"
 
 export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const {login} = useAuth()
+    const { login } = useAuth()
     const router = useRouter()
 
     async function logar(e: React.FormEvent) {
-        e.preventDefault()
-        const res = await fetch('http://localhost:3000/login',
-            {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email, password})
-            }
-        )
-        const data = await res.json()
+        try {
+            e.preventDefault()
+            const res = await fetch('http://localhost:3000/login',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                }
+            )
+            const data = await res.json()
 
-        if (res.ok) {
-            const decoded = jwtDecode<{id: number, role: string}>(data.token)
-            login(data.token, decoded.role, decoded.id)
-            router.push('/dashboard')
-        } else {
-            const erro = data.mensagem
-            toast("Erro ao logar", {
-              description: `${erro}`
+            if (res.ok) {
+                const decoded = jwtDecode<{ id: number, role: string }>(data.token)
+                login(data.token, decoded.role, decoded.id)
+                router.push('/dashboard')
+            } else {
+                const erro = data.mensagem
+                toast("Erro ao logar", {
+                    description: `${erro}`
+                })
+            }
+        } catch (erro) {
+            toast.error("Erro de conexao.", {
+                description: erro instanceof Error ? erro.message : "Erro desconhecido"
             })
         }
     }
@@ -51,12 +57,12 @@ export default function Login() {
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input value={email} onChange={(e) => setEmail(e.target.value)} id="email" type="email" placeholder="email@email.com" required/>
+                                <Input value={email} onChange={(e) => setEmail(e.target.value)} id="email" type="email" placeholder="email@email.com" required />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Senha</Label>
-                                <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" placeholder="******" required/>
+                                <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" placeholder="******" required />
                             </div>
                         </div>
                     </form>

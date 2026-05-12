@@ -4,6 +4,7 @@ import { Button } from "./ui/button"
 import { CheckCircle2, Trash } from "lucide-react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useData } from "@/context/dataContext"
 
 interface Emprestimo {
     id: number
@@ -18,7 +19,7 @@ interface Emprestimo {
 
 function AcoesReservaCell({ emprestimo }: { emprestimo: Emprestimo }) {
     const { usuario } = useAuth()
-    const router = useRouter()
+    const {recarregar} = useData() 
 
     if (usuario?.role !== 'ADMIN') return null
     async function excluir() {
@@ -30,7 +31,7 @@ function AcoesReservaCell({ emprestimo }: { emprestimo: Emprestimo }) {
 
             if (result.ok) {
                 toast.success("Reserva exluido com sucesso.")
-                router.refresh()
+                recarregar()
             } else {
                 toast.error("Erro ao excluir.", {
                     description: `${result.json()}`
@@ -52,7 +53,7 @@ function AcoesReservaCell({ emprestimo }: { emprestimo: Emprestimo }) {
 
             if (result.ok) {
                 toast.success("Devolvido com sucesso.")
-                router.refresh()
+                recarregar()
             } else {
                 toast.error("Erro ao devolver.", {
                     description: data.mensagem
