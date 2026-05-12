@@ -27,7 +27,7 @@ Certifique-se de ter instalado:
     Snippet de código
 
     DATABASE_URL="mysql://usuario:senha@localhost:3306/nome_do_banco"
-    JWT_SECRET="senhaSecreta" -- Coloque EXATAMENTE ASSIM!!
+    JWT_SECRET="SuaSenhaSecreta"
    
 
     Execute as migrations do Prisma:
