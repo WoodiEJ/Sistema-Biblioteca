@@ -1,4 +1,3 @@
-Aqui está um modelo de README.md profissional e direto, focado no seu projeto de Biblioteca, com as instruções de execução e os detalhes sobre o sistema de seeding.
 📚 Sistema de Gerenciamento de Biblioteca
 
 Este é um projeto full-stack desenvolvido com Next.js, Node.js, Prisma e MySQL. O sistema permite a gestão de livros, usuários e empréstimos, com dashboards distintos para administradores e leitores.
