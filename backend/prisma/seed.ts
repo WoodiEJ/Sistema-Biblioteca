@@ -52,7 +52,7 @@ async function main() {
 
   const livrosData = Array.from({ length: 100 }).map(() => ({
     titulo: faker.book.title(),
-    descricao: faker.lorem.paragraph(),
+    descricao: faker.lorem.paragraph().slice(0, 250),
     autor: faker.book.author(),
     quantidade: faker.number.int({ min: 1, max: 15 }),
     preco: parseFloat(faker.commerce.price({ min: 20, max: 150 })),

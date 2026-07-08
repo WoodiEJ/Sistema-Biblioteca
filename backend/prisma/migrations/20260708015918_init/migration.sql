@@ -26,6 +26,8 @@ CREATE TABLE `Livro` (
     `descricao` VARCHAR(191) NOT NULL,
     `autor` VARCHAR(191) NOT NULL,
     `categoria_id` INTEGER NOT NULL,
+    `quantidade` INTEGER NOT NULL,
+    `preco` DOUBLE NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

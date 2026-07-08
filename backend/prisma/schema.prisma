@@ -35,7 +35,7 @@ model Categoria {
 model Livro {
   id           Int          @id @default(autoincrement())
   titulo       String
-  descricao    String
+  descricao    String @db.Text
   autor        String
   categoria_id Int
   quantidade   Int

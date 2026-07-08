@@ -22,13 +22,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter()
     const path = usePathname()
 
-    useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (!token && path !== '/') {
-            router.push('/')
-        }
-    }, [path])
-
     function login(token: string, role: string, id: number) {
         setUsuario({ token, role, id })
         localStorage.setItem('token', token)
