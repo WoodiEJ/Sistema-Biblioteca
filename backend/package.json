@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "echo 'sem build necessario'",
-    "start": "next start",
+    "build": "prisma generate",
+    "start": "tsx src/server.ts",
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts"
   },
